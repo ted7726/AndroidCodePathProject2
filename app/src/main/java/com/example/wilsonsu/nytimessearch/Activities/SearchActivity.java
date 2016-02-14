@@ -9,9 +9,8 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
-import android.widget.AdapterView;
 
-import android.widget.ArrayAdapter;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -52,31 +51,39 @@ public class SearchActivity extends AppCompatActivity implements FilterDialog.Fi
     private Date settingsDates;
     private boolean orderTheLatest = true;
     private String queryString;
-    private int currentPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        init();
         setupView();
     }
 
-    private void setupView() {
+    private void init() {
         ButterKnife.bind(this);
-        currentPage = 0;
         articles = new ArrayList<>();
         articleAdapter = new ArticleAdapter(articles);
+    }
+
+    private void setupView() {
         rvResults.setAdapter(articleAdapter);
-        StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        final StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         gridLayoutManager.setOrientation(StaggeredGridLayoutManager.VERTICAL);
         rvResults.setLayoutManager(gridLayoutManager);
         rvResults.addOnScrollListener(new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                loadMoreAritcle();
+                fetchAritcle(queryString, page);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView view, int dx, int dy) {
+                super.onScrolled(view, dx, dy);
             }
         });
-        rvResults.setItemAnimator(new SlideInUpAnimator());
+//        final SlideInUpAnimator slideInUpAnimator = new SlideInUpAnimator();
+//        rvResults.setItemAnimator(slideInUpAnimator);
         ItemClickSupport.addTo(rvResults).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
@@ -91,7 +98,7 @@ public class SearchActivity extends AppCompatActivity implements FilterDialog.Fi
             @Override
             public boolean onQueryTextSubmit(String query) {
                 queryString = query;
-                fetchAritcle(query);
+                refetchAritcle();
                 Toast.makeText(getBaseContext(), query,
                         Toast.LENGTH_SHORT).show();
                 return true;
@@ -104,21 +111,15 @@ public class SearchActivity extends AppCompatActivity implements FilterDialog.Fi
         });
 
     }
-    private void fetchAritcle() {
+    private void refetchAritcle() {
+
         articles.clear();
         articleAdapter.notifyDataSetChanged();
-        currentPage = 0;
-        fetchAritcle(queryString);
+        fetchAritcle(queryString, 0);
     }
 
-    private void loadMoreAritcle() {
-        ++currentPage;
-        client.requestForSearchArticles(queryString, orderTheLatest, settingsDates, settingsNewsDesk, currentPage, loadMoreHandler()
-        );
-    }
-
-    private void fetchAritcle(String query) {
-        client.requestForSearchArticles(query, orderTheLatest, settingsDates, settingsNewsDesk, currentPage, defaultHandler());
+    private void fetchAritcle(String query, int page) {
+        client.requestForSearchArticles(query, orderTheLatest, settingsDates, settingsNewsDesk, page, defaultHandler());
     }
 
     private void showFilterFragment() {
@@ -131,14 +132,16 @@ public class SearchActivity extends AppCompatActivity implements FilterDialog.Fi
     public void onFinishFilterDialog(String newsDesk, Date date) {
         settingsNewsDesk= newsDesk;
         settingsDates = date;
-        fetchAritcle();
+        refetchAritcle();
     }
 
     private JsonHttpResponseHandler defaultHandler() {
         return new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                parsingHelper(response);
+                Gson gson = new Gson();
+                ArticleDataModel articleEntity = gson.fromJson(response.toString(), ArticleDataModel.class);
+                articles.addAll(articleEntity.response.articles);
                 articleAdapter.notifyDataSetChanged();
                 super.onSuccess(statusCode, headers, response);
             }
@@ -150,38 +153,17 @@ public class SearchActivity extends AppCompatActivity implements FilterDialog.Fi
         };
     }
 
-    private JsonHttpResponseHandler loadMoreHandler() {
-        return new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ArticleDataModel articleDataModel = parsingHelper(response);
-                int curSize = articleAdapter.getItemCount();
-                articleAdapter.notifyItemRangeInserted(curSize, articleDataModel.response.articles.size() - 1);
-                super.onSuccess(statusCode, headers, response);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        };
-    }
-
-    private ArticleDataModel parsingHelper(JSONObject response) {
-        Gson gson = new Gson();
-        ArticleDataModel articleEntity = gson.fromJson(response.toString(), ArticleDataModel.class);
-        articles.addAll(articleEntity.response.articles);
-        return articleEntity;
-    }
-
     public void onSettingsButton(View view) {
         showFilterFragment();
     }
 
     public void onOrderButton(View view) {
         orderTheLatest = !orderTheLatest;
-        btnOrder.setAlpha(orderTheLatest?0.4f:1.0f);
-        fetchAritcle();
+        float tempAlpha = (orderTheLatest?0.0f:0.5f);
+//        final AlphaAnimation animation = new AlphaAnimation(1.0f - tempAlpha, 0.5f + tempAlpha);
+//        animation.setDuration(300);
+//        btnOrder.startAnimation(animation);
+        refetchAritcle();
     }
 
 }

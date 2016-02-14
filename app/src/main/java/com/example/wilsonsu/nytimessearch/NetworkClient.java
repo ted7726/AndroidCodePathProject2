@@ -39,7 +39,6 @@ public class NetworkClient {
             String url = getApiUrl("articlesearch.json");
             RequestParams params = new RequestParams();
             params.put("api-key", API_KEY);
-            params.put("page", 0);
             params.put("q", query);
             params.put("sort", isNewestOrder ? "newest" : "oldest");
             params.put("page",page);

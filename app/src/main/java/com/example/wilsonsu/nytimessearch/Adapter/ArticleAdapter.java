@@ -83,7 +83,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                 String imageURL = "http://www.nytimes.com/"+image.url;
                 if (!TextUtils.isEmpty(image.url)) {
                     Context context = ivImage.getContext();
-                    Glide.with(context).load(imageURL).override(image.width, image.height).fitCenter().into(ivImage);
+                    Glide.with(context).load(imageURL).override(image.width, image.height).fitCenter().placeholder().into(ivImage);
                 }
             }
         }
