@@ -24,12 +24,25 @@ dependencies {
     testCompile 'junit:junit:4.12'
     // Butterknife
     // send network for JSON
-    // gson
+
     // load remote images from the network into images view and cache it
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.loopj.android:android-async-http:1.4.9'
+    // gson
     compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.squareup.picasso:picasso:2.5.2'
+
     compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:cardview-v7:22.0.+'
+    // recycler view
+    compile 'com.android.support:recyclerview-v7:+'
+
+    // Glide
+    compile 'com.github.bumptech.glide:glide:3.5.2'
+    compile 'com.android.support:support-v4:22.0.0'
+    //    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    compile 'jp.wasabeef:recyclerview-animators:1.2.0@aar'
+
+
 }

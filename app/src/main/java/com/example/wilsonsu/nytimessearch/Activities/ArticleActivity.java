@@ -2,6 +2,7 @@ package com.example.wilsonsu.nytimessearch.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -17,7 +18,7 @@ public class ArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
 
-        Article article= (Article) getIntent().getSerializableExtra("article");
+        Article article= (Article) getIntent().getParcelableExtra("article");
         WebView wvArticle = (WebView) findViewById(R.id.wvArticle);
         // Configure related browser settings
         wvArticle.getSettings().setLoadsImagesAutomatically(true);
@@ -32,6 +33,9 @@ public class ArticleActivity extends AppCompatActivity {
             }
         });
         // Load the initial URL
-        wvArticle.loadUrl(article.url);
+        if (!TextUtils.isEmpty(article.url)) {
+            wvArticle.loadUrl(article.url);
+        }
+
     }
 }

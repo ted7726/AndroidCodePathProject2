@@ -1,5 +1,6 @@
 package com.example.wilsonsu.nytimessearch;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -20,8 +21,8 @@ import butterknife.ButterKnife;
  * Created by wilsonsu on 2/11/16.
  */
 public class FilterDialog extends DialogFragment {
-    @Bind(R.id.etNewsDesk) private EditText etNewsDesk;
-    @Bind(R.id.datePicker) private DatePicker datePicker;
+    @Bind(R.id.etNewsDesk) EditText etNewsDesk;
+    @Bind(R.id.datePicker) DatePicker datePicker;
     public static FilterDialog newInstance(String title, Date date) {
         FilterDialog frag = new FilterDialog();
         Bundle args = new Bundle();
@@ -38,7 +39,7 @@ public class FilterDialog extends DialogFragment {
     }
 
     public interface FilterDialogListener {
-        void onFinishEditDialog(String newsDesk, Date date);
+        void onFinishFilterDialog(String newsDesk, Date date);
     }
 
 
@@ -50,7 +51,9 @@ public class FilterDialog extends DialogFragment {
         Date date = (Date)getArguments().getSerializable("date");
 
         etNewsDesk.setText(title);
-
+        if (date == null) {
+            date = new Date();
+        }
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -63,4 +66,18 @@ public class FilterDialog extends DialogFragment {
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
     }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        FilterDialogListener listener = (FilterDialogListener) getActivity();
+        int day = datePicker.getDayOfMonth();
+        int month = datePicker.getMonth();
+        int year =  datePicker.getYear();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        listener.onFinishFilterDialog(etNewsDesk.getText().toString(), calendar.getTime());
+        super.onDismiss(dialog);
+    }
+
+
 }
