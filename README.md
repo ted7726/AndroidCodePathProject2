@@ -36,8 +36,8 @@ The following **bonus** features are implemented:
 
 The following **additional** features are implemented:
 
-* [x]animation between two columns and three columns, since I couldn't simulate zooming on emulator, using setting button to perform zoom in/out to switch columns
-* [x]floating search bar, when scroll up to show the bar, scroll down to hide the bar
+* [x] animation between two columns and three columns, since I couldn't simulate zooming on emulator, using setting button to perform zoom in/out to switch columns
+* [x] floating search bar, when scroll up to show the bar, scroll down to hide the bar
 
 ## Video Walkthrough
 
