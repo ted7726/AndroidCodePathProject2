@@ -18,6 +18,7 @@ public class Article implements Parcelable {
 
     @SerializedName("web_url")
     public String url;
+    public String source;
     /**
      * main : Marissa Mayer Defends Yahoo Strategy
      * sub : Yahoo CEO: Coming from position of strength
@@ -37,12 +38,8 @@ public class Article implements Parcelable {
 
     public List<MultimediaEntity> multimedia;
 
-
-
     public static class HeadlineEntity implements Parcelable {
         public String main;
-
-
         @Override
         public int describeContents() {
             return 0;
@@ -76,7 +73,6 @@ public class Article implements Parcelable {
         public String url;
         public int height;
         public String type;
-
 
         @Override
         public int describeContents() {
@@ -112,6 +108,8 @@ public class Article implements Parcelable {
         };
     }
 
+    public Article() {
+    }
 
     @Override
     public int describeContents() {
@@ -121,16 +119,15 @@ public class Article implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.url);
+        dest.writeString(this.source);
         dest.writeParcelable(this.headline, 0);
         dest.writeLong(date != null ? date.getTime() : -1);
         dest.writeTypedList(multimedia);
     }
 
-    public Article() {
-    }
-
     protected Article(Parcel in) {
         this.url = in.readString();
+        this.source = in.readString();
         this.headline = in.readParcelable(HeadlineEntity.class.getClassLoader());
         long tmpDate = in.readLong();
         this.date = tmpDate == -1 ? null : new Date(tmpDate);

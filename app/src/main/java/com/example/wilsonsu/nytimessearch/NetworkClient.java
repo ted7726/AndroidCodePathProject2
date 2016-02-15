@@ -1,11 +1,15 @@
 package com.example.wilsonsu.nytimessearch;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.TextUtils;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +20,7 @@ import java.util.List;
  */
 public class NetworkClient {
 //        - API-KEY = 45fcda6fe28f92056a19a87c939b477a:5:68404311
-//          - http://api.nytimes.com/svc/search/v2/articlesearch?q=yahoo&api-key=45fcda6fe28f92056a19a87c939b477a:5:68404311
+//          - http://api.nytimes.com/svc/search/v2/articlesearch.json?q=new+york+times&page=2&sort=oldest&api-key=45fcda6fe28f92056a19a87c939b477a:5:68404311
 
         private final String API_BASE_URL = "http://api.nytimes.com/svc/search/v2/";
         private final String API_KEY = "45fcda6fe28f92056a19a87c939b477a:5:68404311";
@@ -48,7 +52,7 @@ public class NetworkClient {
                 if (newDesk.contains("Sports")) {
                     newDesks.add("Sports");
                 }
-                if (newDesk.contains("Fashion") || newDesk.contains("Style")) {
+                if (newDesk.contains("Fashion")) {
                     newDesks.add("Fashion & Style");
                 }
                 if (newDesk.contains("Arts")) {
@@ -62,6 +66,18 @@ public class NetworkClient {
             }
             client.get(url, params, handler);
         }
+
+
+    public boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+        return false;
+    }
 
 
 }

@@ -36,14 +36,26 @@
                 android:layout_height="match_parent"
                 android:onClick="onSettingsButton"/>
             <ImageButton
-                android:id="@+id/btn_order"
-                android:src="@drawable/ic_order"
+                android:id="@+id/btn_columns"
+                android:src="@drawable/ic_resize_decrease"
                 android:background="@color/transparent"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
+                android:onClick="onSettingsColumns"/>
+
+
+            <ImageButton
+                android:id="@+id/btn_newest"
+                android:src="@drawable/ic_order_newest"
+                android:background="@color/transparent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:onClick="onOrderButton"
+                android:layout_alignParentRight="true"
                 />
+
+
+
 
         </LinearLayout>
 
